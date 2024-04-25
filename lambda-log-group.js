@@ -1,0 +1,85 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CustomLambdaLogGroupConstruct = exports.verifyCustomLambdaLogGroupSchema = exports.CustomLambdaLogGroupSchema = void 0;
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const aws_logs_1 = require("aws-cdk-lib/aws-logs");
+const constructs_1 = require("constructs");
+const dotenv = require("dotenv");
+const zod_1 = require("zod");
+const resource_tag_1 = require("./resource-tag");
+const utils_1 = require("./utils");
+dotenv.config();
+/**
+ * CustomLambdaLogGroupSchema
+ *
+ * Properties for a customised LogGroup
+ *
+ * @param awsEnvironment {@link AwsEnvironment}
+ * @param resourceOwner {@link PulsifiTeam}
+ * @param lambdaName
+ * @param removalPolicy {@link RemovalPolicy}
+ */
+exports.CustomLambdaLogGroupSchema = resource_tag_1.CustomResourceTagSchema.extend({
+    lambdaName: zod_1.z.string().min(1).max(500),
+    removalPolicy: zod_1.z.optional(zod_1.z.nativeEnum(aws_cdk_lib_1.RemovalPolicy)),
+}).omit({ resourceName: true });
+/**
+ * verifyCustomLambdaLogGroupSchema
+ *
+ * @param props {@link CustomLambdaLogGroupProps}
+ * @returns output {@link CustomZodResponse}
+ */
+const verifyCustomLambdaLogGroupSchema = (props) => {
+    const zodCheckOutput = exports.CustomLambdaLogGroupSchema.safeParse(props);
+    if (!zodCheckOutput.success) {
+        return {
+            success: zodCheckOutput.success,
+            message: zodCheckOutput.error.issues,
+        };
+    }
+    return {
+        success: zodCheckOutput.success,
+    };
+};
+exports.verifyCustomLambdaLogGroupSchema = verifyCustomLambdaLogGroupSchema;
+class CustomLambdaLogGroupConstruct extends constructs_1.Construct {
+    /**
+     * CustomLambdaLogGroupConstruct \
+     *
+     * CAUTION!!! \
+     * Please choose the Log Group removalPolicy wisely. \
+     * RETAIN = log group will remain if cdk destroy, Change lambdaName for next deploy to avoid stackrollback \
+     * DESTROY = log group will delete once cdk destroy
+     *
+     * @readonly logGroup
+     *
+     * @param scope {@link Construct}
+     * @param id
+     * @param props {@link CustomLambdaLogGroupProps}
+     */
+    constructor(scope, id, props) {
+        super(scope, id);
+        const zodCheckOutput = (0, exports.verifyCustomLambdaLogGroupSchema)(props);
+        if (!zodCheckOutput.success) {
+            throw new Error(JSON.stringify(zodCheckOutput.message));
+        }
+        let customLogRetention = aws_logs_1.RetentionDays.ONE_MONTH;
+        if (process.env.NODE_ENV === utils_1.AwsEnvironment.PRODUCTION) {
+            customLogRetention = aws_logs_1.RetentionDays.THREE_MONTHS;
+        }
+        const logGroupName = `/aws/lambda/${props.lambdaName}`;
+        this.logGroup = new aws_logs_1.LogGroup(this, "LogGroup", {
+            logGroupName,
+            retention: customLogRetention,
+            removalPolicy: props.removalPolicy ?? aws_cdk_lib_1.RemovalPolicy.RETAIN,
+        });
+        new resource_tag_1.CustomResourceTagConstruct(this, "Tagging", {
+            construct: this.logGroup,
+            awsEnvironment: props.awsEnvironment,
+            resourceOwner: props.resourceOwner,
+            resourceName: logGroupName,
+        });
+    }
+}
+exports.CustomLambdaLogGroupConstruct = CustomLambdaLogGroupConstruct;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibGFtYmRhLWxvZy1ncm91cC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL2xpYi9sYW1iZGEtbG9nLWdyb3VwLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBLDZDQUE0QztBQUM1QyxtREFBK0Q7QUFDL0QsMkNBQXVDO0FBQ3ZDLGlDQUFpQztBQUNqQyw2QkFBd0I7QUFDeEIsaURBR3dCO0FBQ3hCLG1DQUFpRTtBQUVqRSxNQUFNLENBQUMsTUFBTSxFQUFFLENBQUM7QUFFaEI7Ozs7Ozs7OztHQVNHO0FBQ1UsUUFBQSwwQkFBMEIsR0FBRyxzQ0FBdUIsQ0FBQyxNQUFNLENBQUM7SUFDeEUsVUFBVSxFQUFFLE9BQUMsQ0FBQyxNQUFNLEVBQUUsQ0FBQyxHQUFHLENBQUMsQ0FBQyxDQUFDLENBQUMsR0FBRyxDQUFDLEdBQUcsQ0FBQztJQUN0QyxhQUFhLEVBQUUsT0FBQyxDQUFDLFFBQVEsQ0FBQyxPQUFDLENBQUMsVUFBVSxDQUFDLDJCQUFhLENBQUMsQ0FBQztDQUN0RCxDQUFDLENBQUMsSUFBSSxDQUFDLEVBQUUsWUFBWSxFQUFFLElBQUksRUFBRSxDQUFDLENBQUM7QUFnQmhDOzs7OztHQUtHO0FBQ0ksTUFBTSxnQ0FBZ0MsR0FBRyxDQUMvQyxLQUFnQyxFQUMvQixFQUFFO0lBQ0gsTUFBTSxjQUFjLEdBQUcsa0NBQTBCLENBQUMsU0FBUyxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQ25FLElBQUksQ0FBQyxjQUFjLENBQUMsT0FBTyxFQUFFLENBQUM7UUFDN0IsT0FBTztZQUNOLE9BQU8sRUFBRSxjQUFjLENBQUMsT0FBTztZQUMvQixPQUFPLEVBQUUsY0FBYyxDQUFDLEtBQUssQ0FBQyxNQUFNO1NBQ2YsQ0FBQztJQUN4QixDQUFDO0lBRUQsT0FBTztRQUNOLE9BQU8sRUFBRSxjQUFjLENBQUMsT0FBTztLQUNWLENBQUM7QUFDeEIsQ0FBQyxDQUFDO0FBZFcsUUFBQSxnQ0FBZ0Msb0NBYzNDO0FBRUYsTUFBYSw2QkFBOEIsU0FBUSxzQkFBUztJQUczRDs7Ozs7Ozs7Ozs7OztPQWFHO0lBQ0gsWUFDQyxLQUFnQixFQUNoQixFQUFVLEVBQ1YsS0FBZ0M7UUFFaEMsS0FBSyxDQUFDLEtBQUssRUFBRSxFQUFFLENBQUMsQ0FBQztRQUVqQixNQUFNLGNBQWMsR0FBRyxJQUFBLHdDQUFnQyxFQUFDLEtBQUssQ0FBQyxDQUFDO1FBQy9ELElBQUksQ0FBQyxjQUFjLENBQUMsT0FBTyxFQUFFLENBQUM7WUFDN0IsTUFBTSxJQUFJLEtBQUssQ0FBQyxJQUFJLENBQUMsU0FBUyxDQUFDLGNBQWMsQ0FBQyxPQUFPLENBQUMsQ0FBQyxDQUFDO1FBQ3pELENBQUM7UUFFRCxJQUFJLGtCQUFrQixHQUFHLHdCQUFhLENBQUMsU0FBUyxDQUFDO1FBQ2pELElBQUksT0FBTyxDQUFDLEdBQUcsQ0FBQyxRQUFRLEtBQUssc0JBQWMsQ0FBQyxVQUFVLEVBQUUsQ0FBQztZQUN4RCxrQkFBa0IsR0FBRyx3QkFBYSxDQUFDLFlBQVksQ0FBQztRQUNqRCxDQUFDO1FBRUQsTUFBTSxZQUFZLEdBQUcsZUFBZSxLQUFLLENBQUMsVUFBVSxFQUFFLENBQUM7UUFFdkQsSUFBSSxDQUFDLFFBQVEsR0FBRyxJQUFJLG1CQUFRLENBQUMsSUFBSSxFQUFFLFVBQVUsRUFBRTtZQUM5QyxZQUFZO1lBQ1osU0FBUyxFQUFFLGtCQUFrQjtZQUM3QixhQUFhLEVBQUUsS0FBSyxDQUFDLGFBQWEsSUFBSSwyQkFBYSxDQUFDLE1BQU07U0FDMUQsQ0FBQyxDQUFDO1FBRUgsSUFBSSx5Q0FBMEIsQ0FBQyxJQUFJLEVBQUUsU0FBUyxFQUFFO1lBQy9DLFNBQVMsRUFBRSxJQUFJLENBQUMsUUFBUTtZQUN4QixjQUFjLEVBQUUsS0FBSyxDQUFDLGNBQWM7WUFDcEMsYUFBYSxFQUFFLEtBQUssQ0FBQyxhQUFhO1lBQ2xDLFlBQVksRUFBRSxZQUFZO1NBQzFCLENBQUMsQ0FBQztJQUNKLENBQUM7Q0FDRDtBQWpERCxzRUFpREMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBSZW1vdmFsUG9saWN5IH0gZnJvbSBcImF3cy1jZGstbGliXCI7XG5pbXBvcnQgeyBMb2dHcm91cCwgUmV0ZW50aW9uRGF5cyB9IGZyb20gXCJhd3MtY2RrLWxpYi9hd3MtbG9nc1wiO1xuaW1wb3J0IHsgQ29uc3RydWN0IH0gZnJvbSBcImNvbnN0cnVjdHNcIjtcbmltcG9ydCAqIGFzIGRvdGVudiBmcm9tIFwiZG90ZW52XCI7XG5pbXBvcnQgeyB6IH0gZnJvbSBcInpvZFwiO1xuaW1wb3J0IHtcblx0Q3VzdG9tUmVzb3VyY2VUYWdDb25zdHJ1Y3QsXG5cdEN1c3RvbVJlc291cmNlVGFnU2NoZW1hLFxufSBmcm9tIFwiLi9yZXNvdXJjZS10YWdcIjtcbmltcG9ydCB7IEF3c0Vudmlyb25tZW50LCB0eXBlIEN1c3RvbVpvZFJlc3BvbnNlIH0gZnJvbSBcIi4vdXRpbHNcIjtcblxuZG90ZW52LmNvbmZpZygpO1xuXG4vKipcbiAqIEN1c3RvbUxhbWJkYUxvZ0dyb3VwU2NoZW1hXG4gKlxuICogUHJvcGVydGllcyBmb3IgYSBjdXN0b21pc2VkIExvZ0dyb3VwXG4gKlxuICogQHBhcmFtIGF3c0Vudmlyb25tZW50IHtAbGluayBBd3NFbnZpcm9ubWVudH1cbiAqIEBwYXJhbSByZXNvdXJjZU93bmVyIHtAbGluayBQdWxzaWZpVGVhbX1cbiAqIEBwYXJhbSBsYW1iZGFOYW1lXG4gKiBAcGFyYW0gcmVtb3ZhbFBvbGljeSB7QGxpbmsgUmVtb3ZhbFBvbGljeX1cbiAqL1xuZXhwb3J0IGNvbnN0IEN1c3RvbUxhbWJkYUxvZ0dyb3VwU2NoZW1hID0gQ3VzdG9tUmVzb3VyY2VUYWdTY2hlbWEuZXh0ZW5kKHtcblx0bGFtYmRhTmFtZTogei5zdHJpbmcoKS5taW4oMSkubWF4KDUwMCksXG5cdHJlbW92YWxQb2xpY3k6IHoub3B0aW9uYWwoei5uYXRpdmVFbnVtKFJlbW92YWxQb2xpY3kpKSxcbn0pLm9taXQoeyByZXNvdXJjZU5hbWU6IHRydWUgfSk7XG5cbi8qKlxuICogQ3VzdG9tTGFtYmRhTG9nR3JvdXBQcm9wc1xuICpcbiAqIFByb3BlcnRpZXMgZm9yIGEgY3VzdG9taXNlZCBMb2dHcm91cFxuICpcbiAqIEBwYXJhbSBhd3NFbnZpcm9ubWVudCB7QGxpbmsgQXdzRW52aXJvbm1lbnR9XG4gKiBAcGFyYW0gcmVzb3VyY2VPd25lciB7QGxpbmsgUHVsc2lmaVRlYW19XG4gKiBAcGFyYW0gbGFtYmRhTmFtZVxuICogQHBhcmFtIHJlbW92YWxQb2xpY3kge0BsaW5rIFJlbW92YWxQb2xpY3l9XG4gKi9cbmV4cG9ydCB0eXBlIEN1c3RvbUxhbWJkYUxvZ0dyb3VwUHJvcHMgPSB6LmluZmVyPFxuXHR0eXBlb2YgQ3VzdG9tTGFtYmRhTG9nR3JvdXBTY2hlbWFcbj47XG5cbi8qKlxuICogdmVyaWZ5Q3VzdG9tTGFtYmRhTG9nR3JvdXBTY2hlbWFcbiAqXG4gKiBAcGFyYW0gcHJvcHMge0BsaW5rIEN1c3RvbUxhbWJkYUxvZ0dyb3VwUHJvcHN9XG4gKiBAcmV0dXJucyBvdXRwdXQge0BsaW5rIEN1c3RvbVpvZFJlc3BvbnNlfVxuICovXG5leHBvcnQgY29uc3QgdmVyaWZ5Q3VzdG9tTGFtYmRhTG9nR3JvdXBTY2hlbWEgPSAoXG5cdHByb3BzOiBDdXN0b21MYW1iZGFMb2dHcm91cFByb3BzLFxuKSA9PiB7XG5cdGNvbnN0IHpvZENoZWNrT3V0cHV0ID0gQ3VzdG9tTGFtYmRhTG9nR3JvdXBTY2hlbWEuc2FmZVBhcnNlKHByb3BzKTtcblx0aWYgKCF6b2RDaGVja091dHB1dC5zdWNjZXNzKSB7XG5cdFx0cmV0dXJuIHtcblx0XHRcdHN1Y2Nlc3M6IHpvZENoZWNrT3V0cHV0LnN1Y2Nlc3MsXG5cdFx0XHRtZXNzYWdlOiB6b2RDaGVja091dHB1dC5lcnJvci5pc3N1ZXMsXG5cdFx0fSBhcyBDdXN0b21ab2RSZXNwb25zZTtcblx0fVxuXG5cdHJldHVybiB7XG5cdFx0c3VjY2Vzczogem9kQ2hlY2tPdXRwdXQuc3VjY2Vzcyxcblx0fSBhcyBDdXN0b21ab2RSZXNwb25zZTtcbn07XG5cbmV4cG9ydCBjbGFzcyBDdXN0b21MYW1iZGFMb2dHcm91cENvbnN0cnVjdCBleHRlbmRzIENvbnN0cnVjdCB7XG5cdHB1YmxpYyByZWFkb25seSBsb2dHcm91cDogTG9nR3JvdXA7XG5cblx0LyoqXG5cdCAqIEN1c3RvbUxhbWJkYUxvZ0dyb3VwQ29uc3RydWN0IFxcXG5cdCAqXG5cdCAqIENBVVRJT04hISEgXFxcblx0ICogUGxlYXNlIGNob29zZSB0aGUgTG9nIEdyb3VwIHJlbW92YWxQb2xpY3kgd2lzZWx5LiBcXFxuXHQgKiBSRVRBSU4gPSBsb2cgZ3JvdXAgd2lsbCByZW1haW4gaWYgY2RrIGRlc3Ryb3ksIENoYW5nZSBsYW1iZGFOYW1lIGZvciBuZXh0IGRlcGxveSB0byBhdm9pZCBzdGFja3JvbGxiYWNrIFxcXG5cdCAqIERFU1RST1kgPSBsb2cgZ3JvdXAgd2lsbCBkZWxldGUgb25jZSBjZGsgZGVzdHJveVxuXHQgKlxuXHQgKiBAcmVhZG9ubHkgbG9nR3JvdXBcblx0ICpcblx0ICogQHBhcmFtIHNjb3BlIHtAbGluayBDb25zdHJ1Y3R9XG5cdCAqIEBwYXJhbSBpZFxuXHQgKiBAcGFyYW0gcHJvcHMge0BsaW5rIEN1c3RvbUxhbWJkYUxvZ0dyb3VwUHJvcHN9XG5cdCAqL1xuXHRjb25zdHJ1Y3Rvcihcblx0XHRzY29wZTogQ29uc3RydWN0LFxuXHRcdGlkOiBzdHJpbmcsXG5cdFx0cHJvcHM6IEN1c3RvbUxhbWJkYUxvZ0dyb3VwUHJvcHMsXG5cdCkge1xuXHRcdHN1cGVyKHNjb3BlLCBpZCk7XG5cblx0XHRjb25zdCB6b2RDaGVja091dHB1dCA9IHZlcmlmeUN1c3RvbUxhbWJkYUxvZ0dyb3VwU2NoZW1hKHByb3BzKTtcblx0XHRpZiAoIXpvZENoZWNrT3V0cHV0LnN1Y2Nlc3MpIHtcblx0XHRcdHRocm93IG5ldyBFcnJvcihKU09OLnN0cmluZ2lmeSh6b2RDaGVja091dHB1dC5tZXNzYWdlKSk7XG5cdFx0fVxuXG5cdFx0bGV0IGN1c3RvbUxvZ1JldGVudGlvbiA9IFJldGVudGlvbkRheXMuT05FX01PTlRIO1xuXHRcdGlmIChwcm9jZXNzLmVudi5OT0RFX0VOViA9PT0gQXdzRW52aXJvbm1lbnQuUFJPRFVDVElPTikge1xuXHRcdFx0Y3VzdG9tTG9nUmV0ZW50aW9uID0gUmV0ZW50aW9uRGF5cy5USFJFRV9NT05USFM7XG5cdFx0fVxuXG5cdFx0Y29uc3QgbG9nR3JvdXBOYW1lID0gYC9hd3MvbGFtYmRhLyR7cHJvcHMubGFtYmRhTmFtZX1gO1xuXG5cdFx0dGhpcy5sb2dHcm91cCA9IG5ldyBMb2dHcm91cCh0aGlzLCBcIkxvZ0dyb3VwXCIsIHtcblx0XHRcdGxvZ0dyb3VwTmFtZSxcblx0XHRcdHJldGVudGlvbjogY3VzdG9tTG9nUmV0ZW50aW9uLFxuXHRcdFx0cmVtb3ZhbFBvbGljeTogcHJvcHMucmVtb3ZhbFBvbGljeSA/PyBSZW1vdmFsUG9saWN5LlJFVEFJTixcblx0XHR9KTtcblxuXHRcdG5ldyBDdXN0b21SZXNvdXJjZVRhZ0NvbnN0cnVjdCh0aGlzLCBcIlRhZ2dpbmdcIiwge1xuXHRcdFx0Y29uc3RydWN0OiB0aGlzLmxvZ0dyb3VwLFxuXHRcdFx0YXdzRW52aXJvbm1lbnQ6IHByb3BzLmF3c0Vudmlyb25tZW50LFxuXHRcdFx0cmVzb3VyY2VPd25lcjogcHJvcHMucmVzb3VyY2VPd25lcixcblx0XHRcdHJlc291cmNlTmFtZTogbG9nR3JvdXBOYW1lLFxuXHRcdH0pO1xuXHR9XG59XG4iXX0=

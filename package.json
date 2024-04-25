@@ -1,0 +1,92 @@
+{
+  "name": "@pulsifi/custom-aws-cdk-lib",
+  "version": "1.0.1",
+  "author": "DevOps <devops@pulsifi.me>",
+  "packageManager": "pnpm@9.0.5+sha512.a722575c18fd791f9ef71e387c6e16cc03c90d859b9b0998d0428ca0e3220828b32a96e6de73cea34edbc0f50824771b1a69c7ea36b86daa3b89c7e6d9a3d912",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc --project tsconfig.json && pnpm copy",
+    "watch": "tsc -w",
+    "test": "VITE_CJS_IGNORE_WARNING=true vitest",
+    "format": "biome format --write ./lib ./test",
+    "lint": "biome lint ./lib ./test",
+    "check": "biome check --apply ./lib ./test",
+    "test:ci": "VITE_CJS_IGNORE_WARNING=true vitest run --coverage",
+    "copy": "copyfiles package.json ./dist && copyfiles README.md ./dist",
+    "prebuild": "rimraf dist",
+    "postversion": "copyfiles package.json ./dist && copyfiles README.md ./dist"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "lodash": "4.17.21",
+    "zod": "3.23.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/lodash": "4.17.0",
+    "@types/node": "20.12.7",
+    "aws-cdk-lib": "2.138.0",
+    "constructs": "^10.3.0",
+    "copyfiles": "^2.4.1",
+    "esbuild": "^0.20.2",
+    "rimraf": "^5.0.5",
+    "typescript": "~5.4.4"
+  },
+  "peerDependencies": {
+    "aws-cdk-lib": "2.138.0",
+    "constructs": "^10.0.0",
+    "dotenv": "^16.4.5",
+    "lodash": "4.17.21",
+    "zod": "3.23.3"
+  },
+  "optionalDependencies": {
+    "@biomejs/biome": "1.7.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "6.0.3",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/npm": "12.0.0",
+    "@vitest/coverage-v8": "1.5.0",
+    "semantic-release": "23.0.8",
+    "typedoc": "^0.25.12",
+    "vite-tsconfig-paths": "4.3.2",
+    "vitest": "^1.4.0"
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": true,
+          "pkgRoot": "dist"
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "CHANGELOG.md"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ],
+      "@semantic-release/github",
+      [
+        "@semantic-release/exec",
+        {
+          "verifyReleaseCmd": "echo ${nextRelease.version} > .VERSION"
+        }
+      ]
+    ]
+  }
+}
