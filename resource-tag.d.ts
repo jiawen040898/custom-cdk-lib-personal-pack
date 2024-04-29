@@ -1,6 +1,6 @@
 import { Construct, type IConstruct } from "constructs";
 import { z } from "zod";
-import { AwsEnvironment, type CustomZodResponse, PulsifiTeam } from "./utils";
+import { AwsEnvironment, PulsifiTeam } from "./utils";
 /**
  * CustomResourceTagSchema
  *
@@ -32,13 +32,6 @@ export declare const CustomResourceTagSchema: z.ZodObject<{
 export type CustomResourceTagProps = z.infer<typeof CustomResourceTagSchema> & {
     construct: IConstruct;
 };
-/**
- * verifyCustomResourceTagSchema
- *
- * @param props {@link CustomResourceTagProps}
- * @returns CustomZodResponse {@link CustomZodResponse}
- */
-export declare const verifyCustomResourceTagSchema: (props: CustomResourceTagProps) => CustomZodResponse;
 export declare class CustomResourceTagConstruct extends Construct {
     /**
      * CustomResourceTagConstruct

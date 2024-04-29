@@ -1,7 +1,6 @@
 import { SecurityGroup } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 import { z } from "zod";
-import type { CustomZodResponse } from "./utils";
 /**
  * CustomSecurityGroupSchema
  *
@@ -32,13 +31,6 @@ export declare const CustomSecurityGroupSchema: z.ZodObject<z.objectUtil.extendS
  * @param resourceOwner {@link PulsifiTeam}
  */
 export type CustomSecurityGroupProps = z.infer<typeof CustomSecurityGroupSchema>;
-/**
- * verifyCustomSecurityGroupSchema
- *
- * @param props {@link CustomSecurityGroupProps}
- * @returns output {@link CustomZodResponse}
- */
-export declare const verifyCustomSecurityGroupSchema: (props: CustomSecurityGroupProps) => CustomZodResponse;
 export declare class CustomSecurityGroupConstruct extends Construct {
     readonly securityGroupName: string;
     readonly securityGroup: SecurityGroup;

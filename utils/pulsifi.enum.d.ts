@@ -33,12 +33,12 @@ export declare enum PulsifiTeam {
  * PulsifiCdkError
  *
  * Keys: \
- * - INVALID_REGION_ABBRV_ERROR, \
  * - NON_KEBAB_CASE \
  * - INVALID_AWS_REGION
  */
 export declare enum PulsifiCustomCdkError {
-    INVALID_REGION_ABBRV = "Invalid AwsRegion provided",
     NON_KEBAB_CASE = "resourceName: kebab-case format",
-    INVALID_AWS_REGION = "Invalid aws region"
+    INVALID_AWS_REGION = "Invalid aws region",
+    IAM_POLICY_INVALID_ROLES = "Please include role(s)",
+    IAM_POLICY_INVALID_STATEMENTS = "Please include iam policy statement(s)"
 }

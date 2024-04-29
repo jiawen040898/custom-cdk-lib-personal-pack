@@ -19,6 +19,20 @@ export declare class PulsifiUtils {
      * @returns output {@link AwsEnvironment}
      */
     getAwsEnvironment: (awsEnvironment: string) => AwsEnvironment;
-    getAwsRegionAbbrv: (awsRegion: string) => string;
+    /**
+     * getAwsRegionEnumValues
+     * @param awsRegion
+     * @returns enum reference ${@link AwsRegion}
+     */
     getAwsRegionEnumValues: (awsRegion: string) => string;
+    /**
+     * verifyCustomSchema
+     *
+     * verifies Zod custom schemas such as CustomLambdaErrorAlarmSchema
+     *
+     * @param schema {@link z.Schema}
+     * @param props
+     * @returns
+     */
+    verifyCustomSchema: <TSchema extends z.ZodType<any, z.ZodTypeDef, any>, TProps>(schema: TSchema, props: TProps) => CustomZodResponse;
 }

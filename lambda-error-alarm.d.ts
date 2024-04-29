@@ -1,14 +1,13 @@
 import type { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import type { z } from "zod";
-import type { CustomZodResponse } from "./utils";
 /**
  * CustomLambdaErrorAlarmSchema
  *
  * @param awsEnvironment {@link AwsEnvironment}
  * @param resourceOwner {@link PulsifiTeam}
  */
-declare const CustomLambdaErrorAlarmSchema: z.ZodObject<Omit<{
+export declare const CustomLambdaErrorAlarmSchema: z.ZodObject<Omit<{
     resourceName: z.ZodString;
     awsEnvironment: z.ZodNativeEnum<typeof import("./utils").AwsEnvironment>;
     resourceOwner: z.ZodNativeEnum<typeof import("./utils").PulsifiTeam>;
@@ -31,13 +30,6 @@ declare const CustomLambdaErrorAlarmSchema: z.ZodObject<Omit<{
 export type CustomLambdaErrorAlarmProps = z.infer<typeof CustomLambdaErrorAlarmSchema> & {
     lambda: NodejsFunction;
 };
-/**
- * verifyCustomLambdaErrorAlarmSchema
- *
- * @param props {@link CustomLambdaErrorAlarmProps}
- * @returns output {@link CustomZodResponse}
- */
-export declare const verifyCustomLambdaErrorAlarmSchema: (props: CustomLambdaErrorAlarmProps) => CustomZodResponse;
 export declare class CustomLambdaErrorAlarmConstruct extends Construct {
     /**
      * CustomLambdaErrorAlarmConstruct
@@ -51,4 +43,3 @@ export declare class CustomLambdaErrorAlarmConstruct extends Construct {
      */
     constructor(scope: Construct, id: string, props: CustomLambdaErrorAlarmProps);
 }
-export {};

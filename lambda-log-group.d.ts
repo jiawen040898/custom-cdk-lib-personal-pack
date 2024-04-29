@@ -2,7 +2,7 @@ import { RemovalPolicy } from "aws-cdk-lib";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { Construct } from "constructs";
 import { z } from "zod";
-import { AwsEnvironment, type CustomZodResponse } from "./utils";
+import { AwsEnvironment } from "./utils";
 /**
  * CustomLambdaLogGroupSchema
  *
@@ -42,13 +42,6 @@ export declare const CustomLambdaLogGroupSchema: z.ZodObject<Omit<z.objectUtil.e
  * @param removalPolicy {@link RemovalPolicy}
  */
 export type CustomLambdaLogGroupProps = z.infer<typeof CustomLambdaLogGroupSchema>;
-/**
- * verifyCustomLambdaLogGroupSchema
- *
- * @param props {@link CustomLambdaLogGroupProps}
- * @returns output {@link CustomZodResponse}
- */
-export declare const verifyCustomLambdaLogGroupSchema: (props: CustomLambdaLogGroupProps) => CustomZodResponse;
 export declare class CustomLambdaLogGroupConstruct extends Construct {
     readonly logGroup: LogGroup;
     /**

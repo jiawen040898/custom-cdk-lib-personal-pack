@@ -1,8 +1,8 @@
 {
   "name": "@pulsifi/custom-aws-cdk-lib",
-  "version": "1.0.1",
+  "version": "1.8.0",
   "author": "DevOps <devops@pulsifi.me>",
-  "packageManager": "pnpm@9.0.5+sha512.a722575c18fd791f9ef71e387c6e16cc03c90d859b9b0998d0428ca0e3220828b32a96e6de73cea34edbc0f50824771b1a69c7ea36b86daa3b89c7e6d9a3d912",
+  "packageManager": "pnpm@9.0.6+sha512.f6d863130973207cb7a336d6b439a242a26ac8068077df530d6a86069419853dc1ffe64029ec594a9c505a3a410d19643c870aba6776330f5cfddcf10a9c1617",
   "engines": {
     "node": ">=20.0.0"
   },
@@ -23,13 +23,13 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "lodash": "4.17.21",
-    "zod": "3.23.3"
+    "zod": "3.23.4"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/lodash": "4.17.0",
     "@types/node": "20.12.7",
-    "aws-cdk-lib": "2.138.0",
+    "aws-cdk-lib": "2.139.0",
     "constructs": "^10.3.0",
     "copyfiles": "^2.4.1",
     "esbuild": "^0.20.2",
@@ -37,11 +37,11 @@
     "typescript": "~5.4.4"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "2.138.0",
+    "aws-cdk-lib": "2.139.0",
     "constructs": "^10.0.0",
     "dotenv": "^16.4.5",
     "lodash": "4.17.21",
-    "zod": "3.23.3"
+    "zod": "3.23.4"
   },
   "optionalDependencies": {
     "@biomejs/biome": "1.7.1",
@@ -49,7 +49,7 @@
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/npm": "12.0.0",
-    "@vitest/coverage-v8": "1.5.0",
+    "@vitest/coverage-v8": "1.5.2",
     "semantic-release": "23.0.8",
     "typedoc": "^0.25.12",
     "vite-tsconfig-paths": "4.3.2",
