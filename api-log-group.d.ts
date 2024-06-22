@@ -6,7 +6,7 @@ import { AwsEnvironment } from "./utils";
 /**
  * CustomApiLogGroupSchema
  *
- * Properties for a customised LogGroup \
+ * Schema for a customised LogGroup \
  * removalPolicy with default RemovalPolicy.RETAIN
  *
  * @param awsEnvironment {@link AwsEnvironment}

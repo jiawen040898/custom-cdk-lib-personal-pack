@@ -11,12 +11,13 @@ export declare enum AwsEnvironment {
 /**
  * AwsRegion
  *
- * Keys: GLOBAL_REGION, PRIMARY_REGION, SECONDARY_REGION
+ * Keys: GLOBAL_REGION, PRIMARY_REGION, DE, ID
  */
 export declare enum AwsRegion {
     GLOBAL_REGION = "us-east-1",
     PRIMARY_REGION = "ap-southeast-1",
-    SECONDARY_REGION = "eu-central-1"
+    DE = "eu-central-1",
+    ID = "ap-southeast-3"
 }
 /**
  * PulsifiTeam
@@ -42,3 +43,5 @@ export declare enum PulsifiCustomCdkError {
     IAM_POLICY_INVALID_ROLES = "Please include role(s)",
     IAM_POLICY_INVALID_STATEMENTS = "Please include iam policy statement(s)"
 }
+export type EcsPropertyFields = "period" | "evaluationPeriods" | "dlqEvaluationPeriods" | "datapointsToAlarm" | "dlqDatapointsToAlarm" | "highMemoryThreshold" | "lowMemoryThreshold" | "highVcpuThreshold" | "lowVcpuThreshold";
+export declare const EcsProperties: Record<EcsPropertyFields, number>;

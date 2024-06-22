@@ -11,4 +11,7 @@ Library for provisioning custom Pulsifi AWS constructs:
 | Lambda Cloudwatch LogGroup        | CustomLambdaLogGroupConstruct       |
 | Resource Tag                      | CustomResourceTagConstruct          |
 | Security Group                    | CustomSecurityGroupConstruct        |
+| SNS                               | CustomSnsConstruct                  |
+| SQS Pair                          | CustomSqsPairConstruct              |
+| SQS                               | CustomSqsConstruct                  |
 | State Machine Cloudwatch LogGroup | CustomStateMachineLogGroupConstruct |

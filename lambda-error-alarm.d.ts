@@ -1,3 +1,4 @@
+import type { Function as LambdaFunction } from "aws-cdk-lib/aws-lambda";
 import type { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import type { z } from "zod";
@@ -28,7 +29,7 @@ export declare const CustomLambdaErrorAlarmSchema: z.ZodObject<Omit<{
  * @param lambda {@link NodejsFunction}
  */
 export type CustomLambdaErrorAlarmProps = z.infer<typeof CustomLambdaErrorAlarmSchema> & {
-    lambda: NodejsFunction;
+    lambda: NodejsFunction | LambdaFunction;
 };
 export declare class CustomLambdaErrorAlarmConstruct extends Construct {
     /**

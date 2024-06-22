@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import { AwsEnvironment } from "./pulsifi.enum";
+import { AwsEnvironment, type EcsPropertyFields } from "./pulsifi.enum";
 /**
  * CustomZodResponse
  *
@@ -35,4 +35,12 @@ export declare class PulsifiUtils {
      * @returns
      */
     verifyCustomSchema: <TSchema extends z.ZodType<any, z.ZodTypeDef, any>, TProps>(schema: TSchema, props: TProps) => CustomZodResponse;
+    /**
+     * getEcsProperties
+     *
+     * @param input
+     *
+     * @returns properties
+     */
+    getEcsProperties: (input: EcsPropertyFields) => number;
 }

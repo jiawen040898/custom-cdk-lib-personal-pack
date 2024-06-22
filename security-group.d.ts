@@ -1,4 +1,4 @@
-import { SecurityGroup } from "aws-cdk-lib/aws-ec2";
+import { type IVpc, SecurityGroup } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 import { z } from "zod";
 /**
@@ -34,11 +34,13 @@ export type CustomSecurityGroupProps = z.infer<typeof CustomSecurityGroupSchema>
 export declare class CustomSecurityGroupConstruct extends Construct {
     readonly securityGroupName: string;
     readonly securityGroup: SecurityGroup;
+    readonly vpc: IVpc;
     /**
      * CustomSecurityGroupConstruct
      *
      * @readonly securityGroupName
      * @readonly securityGroup
+     * @readonly vpc
      *
      * @param scope {@link Construct}
      * @param id
